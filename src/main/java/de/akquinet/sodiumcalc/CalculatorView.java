@@ -1,24 +1,39 @@
 package de.akquinet.sodiumcalc;
 
+import de.akquinet.sodiumcalc.widgets.SButton;
+import de.akquinet.sodiumcalc.widgets.SLabel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import nz.sodium.Cell;
+import nz.sodium.Stream;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class CalculatorView extends GridPane  {
 
-    private final TextField outputTextField = new TextField();
+    private SLabel outputTextField;
+    private Map<Integer, SButton> numberButtons;
 
     CalculatorView() {
         adaptBasicLayout();
         createNumberButtons();
 
-        add(outputTextField, 0,0,4,1);
-        adaptAndAddTextField();
         adaptAndAddPlusButton();
         adaptAndAddMinusButton();
         adaptAndAddEqualsButton();
+
+        Stream<Long> sDigit1 = numberButtons.get(1).sClicked.map(u -> 1L);
+        Stream<Long> sDigit2 = numberButtons.get(2).sClicked.map(u -> 2L);
+
+        final Stream<Long> digits = sDigit1.merge(sDigit2, (n1, n2) -> n1);
+
+        Cell<Long> display = digits.hold(0L);
+
+
+        adaptAndAddTextField(display);
     }
 
     private void adaptAndAddMinusButton() {
@@ -32,11 +47,12 @@ class CalculatorView extends GridPane  {
         add(button, 3 , 1);
     }
 
-    private void adaptAndAddTextField() {
-        outputTextField.setEditable(false);
+    private void adaptAndAddTextField(Cell<Long> display) {
+        final Cell<String> displayString = display.map(longNumber -> "" + longNumber);
+        outputTextField = new SLabel(displayString);
         outputTextField.setMinWidth(10);
-        outputTextField.setPrefColumnCount(5);
         outputTextField.setAlignment(Pos.CENTER_RIGHT);
+        add(outputTextField, 0,0,4,1);
     }
 
     private void adaptBasicLayout() {
@@ -47,31 +63,34 @@ class CalculatorView extends GridPane  {
     }
 
     private void createNumberButtons() {
+        numberButtons = new HashMap<Integer, SButton>();
         for (int i = 1; i <= 9; i++) {
-            createNumberButton1To9(i);
+            createNumberButton1To9(numberButtons, i);
         }
-        createNumberButton0();
+        createNumberButton0(numberButtons);
     }
 
     private void adaptAndAddEqualsButton() {
-        final Button button = new Button("=");
+        final SButton button = new SButton("=");
         add(button, 3 , 3, 1, 2);
         button.setMaxHeight(1000);
     }
 
-    private void createNumberButton0() {
-        final Button button0 = new Button("0");
+    private void createNumberButton0(Map<Integer, SButton> numberButtons) {
+        final SButton button0 = new SButton("0");
         button0.setMaxWidth(1000);
         add(button0, 0,4, 3,1);
+        numberButtons.put(0, button0);
 
     }
 
-    private void createNumberButton1To9(int number) {
+    private void createNumberButton1To9(Map<Integer, SButton> numberButtons, int number) {
         assert (0 < number) && (number <= 9) : number + " not in 1..9";
 
-        final Button button = new Button("" + number);
+        final SButton button = new SButton("" + number);
         final int numberMinus1 = number - 1;
         add(button, numberMinus1 % 3, 3-(numberMinus1 / 3));
+        numberButtons.put(number, button);
 
     }
 }

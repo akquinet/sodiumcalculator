@@ -9,7 +9,8 @@ public class Main extends Application {
         launch(args);
     }
 
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        //noinspection SpellCheckingInspection
         stage.setTitle("Socalc");
 
         final CalculatorView calculatorView = new CalculatorView();
