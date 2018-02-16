@@ -13,7 +13,8 @@ public class Main extends Application {
         //noinspection SpellCheckingInspection
         stage.setTitle("Socalc");
 
-        final CalculatorView calculatorView = new CalculatorView();
+        final CalculatorController calculatorController = new CalculatorController();
+        final CalculatorView calculatorView = new CalculatorView(calculatorController);
         final Scene scene = new Scene(calculatorView);
         stage.setScene(scene);
         stage.setResizable(false);
