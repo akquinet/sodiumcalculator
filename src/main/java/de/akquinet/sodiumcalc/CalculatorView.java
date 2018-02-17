@@ -8,6 +8,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import nz.sodium.Operational;
 
+import static de.akquinet.sodiumcalc.Operator.COMPUTE;
+import static de.akquinet.sodiumcalc.Operator.MINUS;
+import static de.akquinet.sodiumcalc.Operator.PLUS;
+
 class CalculatorView extends GridPane {
 
     private final CalculatorController calculatorController;
@@ -42,16 +46,19 @@ class CalculatorView extends GridPane {
 
     private void adaptAndAddPlusButton() {
         final Button button = new Button("+");
+        button.setOnAction(event -> calculatorController.pressOperator(PLUS));
         add(button, 3, 1);
     }
 
     private void adaptAndAddMinusButton() {
         final Button button = new Button("-");
+        button.setOnAction(event -> calculatorController.pressOperator(MINUS));
         add(button, 3, 2);
     }
 
     private void adaptAndAddEqualsButton() {
         final SButton button = new SButton("=");
+        button.setOnAction(event -> calculatorController.pressOperator(COMPUTE));
         add(button, 3, 3, 1, 2);
         button.setMaxHeight(1000);
     }
