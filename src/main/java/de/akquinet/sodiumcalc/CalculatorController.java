@@ -22,12 +22,24 @@ public class CalculatorController {
 
             final Cell<Tuple3<Long, Long, Long>> calculatorStateC =
                     displayC.lift(mainC, backC, Tuple::of);
+
             final Stream<Tuple3<Long, Long, Long>> updatedStateS =
                     clickedOperatorS.snapshot(calculatorStateC, Operator::operate);
-            displayC.loop(updatedEnteredNumberS.orElse(updatedStateS.map(Tuple3::_1)).hold(0L));
-            mainC.loop(updatedEnteredNumberS.orElse(updatedStateS.map(Tuple3::_2))
-                    .hold(0L));
-            backC.loop(updatedStateS.map(Tuple3::_3).hold(0L));
+
+            displayC.loop(
+                    updatedEnteredNumberS
+                            .orElse(updatedStateS
+                                    .map(Tuple3::_1))
+                            .hold(0L));
+            mainC.loop(
+                    updatedEnteredNumberS
+                            .orElse(updatedStateS
+                                    .map(Tuple3::_2))
+                            .hold(0L));
+            backC.loop(
+                    updatedStateS
+                            .map(Tuple3::_3)
+                            .hold(0L));
         });
     }
 
