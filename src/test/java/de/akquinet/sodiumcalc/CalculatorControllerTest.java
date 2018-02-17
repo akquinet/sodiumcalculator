@@ -4,10 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static de.akquinet.sodiumcalc.Operator.COMPUTE;
-import static de.akquinet.sodiumcalc.Operator.MINUS;
-import static de.akquinet.sodiumcalc.Operator.PLUS;
-
 class CalculatorControllerTest {
 
     private CalculatorController calculatorController;
@@ -37,11 +33,11 @@ class CalculatorControllerTest {
     void pressOperator12Plus21() {
         calculatorController.pressDigit(1L);
         calculatorController.pressDigit(2L);
-        calculatorController.pressOperator(PLUS);
+        calculatorController.pressPlus();
         Assertions.assertEquals(Long.valueOf(12L), getDisplay());
         calculatorController.pressDigit(2L);
         calculatorController.pressDigit(1L);
-        calculatorController.pressOperator(COMPUTE);
+        calculatorController.pressCompute();
         Assertions.assertEquals(Long.valueOf(33L), getDisplay());
     }
 
@@ -49,11 +45,11 @@ class CalculatorControllerTest {
     void pressOperator30Minus12() {
         calculatorController.pressDigit(3L);
         calculatorController.pressDigit(0L);
-        calculatorController.pressOperator(MINUS);
+        calculatorController.pressMinus();
         Assertions.assertEquals(Long.valueOf(30L), getDisplay());
         calculatorController.pressDigit(1L);
         calculatorController.pressDigit(2L);
-        calculatorController.pressOperator(COMPUTE);
+        calculatorController.pressCompute();
         Assertions.assertEquals(Long.valueOf(18L), getDisplay());
     }
 
@@ -61,13 +57,13 @@ class CalculatorControllerTest {
     void pressOperator30Plus5Minus4() {
         calculatorController.pressDigit(3L);
         calculatorController.pressDigit(0L);
-        calculatorController.pressOperator(PLUS);
+        calculatorController.pressPlus();
         Assertions.assertEquals(Long.valueOf(30L), getDisplay());
         calculatorController.pressDigit(5L);
-        calculatorController.pressOperator(MINUS);
+        calculatorController.pressMinus();
         Assertions.assertEquals(Long.valueOf(35L), getDisplay());
         calculatorController.pressDigit(4L);
-        calculatorController.pressOperator(COMPUTE);
+        calculatorController.pressCompute();
         Assertions.assertEquals(Long.valueOf(31L), getDisplay());
     }
 

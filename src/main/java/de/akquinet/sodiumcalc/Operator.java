@@ -1,18 +1,19 @@
 package de.akquinet.sodiumcalc;
 
-import io.vavr.Function1;
-import io.vavr.Tuple3;
+import java.util.function.BinaryOperator;
 
 public enum Operator {
-    PLUS( state -> state ), MINUS(state -> state ), COMPUTE(state -> state );
+    PLUS((main,back) -> main + back),
+    MINUS((main,back) -> back - main),
+    NONE((main,back) -> main);
 
-    private final Function1<Tuple3<Long,Long,Long>, Tuple3<Long,Long,Long>> operation;
+    private final BinaryOperator<Long> operation;
 
-    Operator(Function1<Tuple3<Long,Long,Long>, Tuple3<Long,Long,Long>> operation) {
+    Operator(BinaryOperator<Long> operation) {
         this.operation = operation;
     }
 
-    public Tuple3<Long,Long,Long> operate(Tuple3<Long, Long, Long> state) {
-        return operation.apply(state);
+    public Long operate(Long main, Long back) {
+        return operation.apply(main, back);
     }
 }
