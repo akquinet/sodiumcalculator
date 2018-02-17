@@ -1,22 +1,27 @@
 package de.akquinet.sodiumcalc;
 
-import nz.sodium.Cell;
-import nz.sodium.StreamSink;
+import nz.sodium.*;
 
 public class CalculatorController {
 
-    private final StreamSink<Long> sClickedDigit = new StreamSink<>();
-    private Cell<Long> displayCell;
+    private final StreamSink<Long> clickedDigitS = new StreamSink<>();
+    private CellLoop<Long> displayC;
 
     CalculatorController() {
-        displayCell = sClickedDigit.hold(0L);
+        Transaction.runVoid(() -> {
+            displayC = new CellLoop<>();
+            final Stream<Long> newDisplayS =
+                    clickedDigitS.snapshot(displayC,
+                            (digit, display) -> display * 10 + digit);
+            displayC.loop(newDisplayS.hold(0L));
+        });
     }
 
     public Cell<Long> getDisplayCell() {
-        return displayCell;
+        return displayC;
     }
 
     public void pressDigit(Long digit) {
-        sClickedDigit.send(digit);
+        clickedDigitS.send(digit);
     }
 }
