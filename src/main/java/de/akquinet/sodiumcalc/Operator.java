@@ -3,7 +3,7 @@ package de.akquinet.sodiumcalc;
 import java.util.function.BinaryOperator;
 
 public enum Operator {
-    PLUS((main,back) -> main + back),
+    PLUS(Long::sum ),
     MINUS((main,back) -> back - main),
     NONE((main,back) -> main);
 
