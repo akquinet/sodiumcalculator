@@ -10,7 +10,7 @@ class CalculatorControllerTest {
 
     @BeforeEach
     void setUp() {
-        calculatorController = new CalculatorController();
+        calculatorController = new CalculatorControllerFinal();
     }
 
     @Test

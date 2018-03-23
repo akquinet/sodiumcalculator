@@ -1,88 +1,15 @@
 package de.akquinet.sodiumcalc;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple4;
-import nz.sodium.*;
+import nz.sodium.Cell;
 
-import static nz.sodium.Unit.UNIT;
+public interface CalculatorController {
+    Cell<Long> getDisplayCell();
 
-public class CalculatorController {
+    void pressDigit(Long digit);
 
-    private final StreamSink<Long> clickedDigitS = new StreamSink<>();
-    private final StreamSink<Operator> clickedOperatorS = new StreamSink<>();
-    private final StreamSink<Unit> clickCompute = new StreamSink<>();
-    private CellLoop<Long> displayC;
+    void pressPlus();
 
-    CalculatorController() {
-        Transaction.runVoid(() -> {
-            displayC = new CellLoop<>();
-            final CellLoop<Long> mainC = new CellLoop<>();
-            final CellLoop<Long> backC = new CellLoop<>();
-            final CellLoop<Operator> activeOperator = new CellLoop<>();
+    void pressMinus();
 
-            final Stream<Long> updatedEnteredNumberS =
-                    clickedDigitS.snapshot(mainC,
-                            (digit, main) -> main * 10 + digit);
-
-            final Cell<Tuple4<Long, Long, Long, Operator>> calculatorStateC =
-                    displayC.lift(mainC, backC, activeOperator, Tuple::of);
-
-            final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateFromOperatorS =
-                    clickedOperatorS.snapshot(calculatorStateC, (operator, state) -> {
-                        Long newBack = state._4.operate(state._2, state._3);
-                        Long newMain = 0L;
-                        return Tuple.of(newBack, newMain, newBack, operator);
-                    });
-
-            final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateFromCompute =
-                    clickCompute.snapshot(calculatorStateC, (unit, state) -> {
-                        Long newBack = 0L;
-                        Long newMain = 0L;
-                        Long newDisplay = state._4.operate(state._2, state._3);
-                        return Tuple.of(newDisplay, newMain, newBack, Operator.NONE);
-                    });
-
-            final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateS =
-                    updatedStateFromCompute.orElse(updatedStateFromOperatorS);
-
-            displayC.loop(
-                    updatedEnteredNumberS
-                            .orElse(updatedStateS
-                                    .map(Tuple4::_1))
-                            .hold(0L));
-            mainC.loop(
-                    updatedEnteredNumberS
-                            .orElse(updatedStateS
-                                    .map(Tuple4::_2))
-                            .hold(0L));
-            backC.loop(
-                    updatedStateS
-                            .map(Tuple4::_3)
-                            .hold(0L));
-            activeOperator.loop(
-                    updatedStateS
-                            .map(Tuple4::_4)
-                            .hold(Operator.NONE));
-        });
-    }
-
-    public Cell<Long> getDisplayCell() {
-        return displayC;
-    }
-
-    public void pressDigit(Long digit) {
-        clickedDigitS.send(digit);
-    }
-
-    public void pressPlus() {
-        clickedOperatorS.send(Operator.PLUS);
-    }
-
-    public void pressMinus() {
-        clickedOperatorS.send(Operator.MINUS);
-    }
-
-    public void pressCompute() {
-        clickCompute.send(UNIT);
-    }
+    void pressCompute();
 }
