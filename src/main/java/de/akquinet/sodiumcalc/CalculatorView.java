@@ -64,7 +64,7 @@ class CalculatorView extends GridPane {
         displayTF.setPrefColumnCount(8);
         displayTF.setAlignment(Pos.CENTER_RIGHT);
         add(displayTF, 0, 0, 4, 1);
-        Operational.updates(calculatorController.getDisplayCell())
+        Operational.value(calculatorController.getDisplayCell())
                 .listen(value -> displayTF.setText("" + value));
     }
 
