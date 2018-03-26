@@ -3,6 +3,7 @@ package de.akquinet.sodiumcalc;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import nz.sodium.Transaction;
 
 public class Main extends Application {
     public static void main(String[] args) {
@@ -13,13 +14,15 @@ public class Main extends Application {
         //noinspection SpellCheckingInspection
         stage.setTitle("Socalc");
 
-        final CalculatorController calculatorController = new CalculatorControllerV1Display();
-        //final CalculatorController calculatorController = new CalculatorControllerFinal();
+        Transaction.runVoid(() -> {
+            final CalculatorController calculatorController = new CalculatorControllerV1Display();
+            //final CalculatorController calculatorController = new CalculatorControllerFinal();
 
-        final CalculatorView calculatorView = new CalculatorView(calculatorController);
-        final Scene scene = new Scene(calculatorView);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+            final CalculatorView calculatorView = new CalculatorView(calculatorController);
+            final Scene scene = new Scene(calculatorView);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+        });
     }
 }
