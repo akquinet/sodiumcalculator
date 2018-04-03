@@ -1,5 +1,6 @@
 package de.akquinet.sodiumcalc;
 
+import nz.sodium.Transaction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,8 @@ class CalculatorControllerTest {
 
     @BeforeEach
     void setUp() {
-        calculatorController = new CalculatorControllerFinal();
+        Transaction.runVoid(() ->
+                calculatorController = new CalculatorControllerFinal());
     }
 
     @Test
@@ -19,6 +21,10 @@ class CalculatorControllerTest {
         calculatorController.pressDigit(2L);
         calculatorController.pressDigit(3L);
         Assertions.assertEquals(Long.valueOf(123L), getDisplay());
+    }
+
+    private Long getDisplay() {
+        return calculatorController.getDisplayCell().sample();
     }
 
     @Test
@@ -65,9 +71,5 @@ class CalculatorControllerTest {
         calculatorController.pressDigit(4L);
         calculatorController.pressCompute();
         Assertions.assertEquals(Long.valueOf(31L), getDisplay());
-    }
-
-    private Long getDisplay() {
-        return calculatorController.getDisplayCell().sample();
     }
 }

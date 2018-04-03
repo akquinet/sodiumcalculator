@@ -13,7 +13,7 @@ public class CalculatorControllerV1Display implements CalculatorController {
     CalculatorControllerV1Display() {
         final Stream<Long> updatedEnteredNumberS =
                 clickedDigitS.snapshot(displayC,
-                        (digit, main) -> main * 10 + digit);
+                        (digit, display) -> display * 10 + digit);
         displayC.loop(
                 updatedEnteredNumberS.hold(0L));
     }

@@ -15,10 +15,11 @@ public class Main extends Application {
         stage.setTitle("Socalc");
 
         Transaction.runVoid(() -> {
-            final CalculatorController calculatorController = new CalculatorControllerV1Display();
-            //final CalculatorController calculatorController = new CalculatorControllerFinal();
+            final CalculatorControllerV2Add controllerV2Add = new CalculatorControllerV2Add();
+            final CalculatorControllerV1Display controllerV1Display = new CalculatorControllerV1Display();
+            final CalculatorControllerFinal controllerFinal = new CalculatorControllerFinal();
 
-            final CalculatorView calculatorView = new CalculatorView(calculatorController);
+            final CalculatorView calculatorView = new CalculatorView(controllerV2Add);
             final Scene scene = new Scene(calculatorView);
             stage.setScene(scene);
             stage.setResizable(false);

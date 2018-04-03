@@ -1,12 +1,25 @@
 package de.akquinet.sodiumcalc;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple4;
 import nz.sodium.*;
 
 import static nz.sodium.Unit.UNIT;
 
 public class CalculatorControllerFinal implements CalculatorController {
+
+    private static class CombinedState {
+        final Long display;
+        final Long back;
+        final Long main;
+        final Operator activeOperator;
+
+        CombinedState(Long display, Long main, Long back, Operator activeOperator) {
+            this.display = display;
+            this.back = back;
+            this.main = main;
+            this.activeOperator = activeOperator;
+        }
+    }
+
 
     private final StreamSink<Long> clickedDigitS = new StreamSink<>();
     private final StreamSink<Operator> clickedOperatorS = new StreamSink<>();
@@ -23,44 +36,42 @@ public class CalculatorControllerFinal implements CalculatorController {
                 clickedDigitS.snapshot(mainC,
                         (digit, main) -> main * 10 + digit);
 
-        final Cell<Tuple4<Long, Long, Long, Operator>> calculatorStateC =
-                displayC.lift(mainC, backC, activeOperator, Tuple::of);
+        final Cell<CombinedState> calculatorStateC =
+                displayC.lift(mainC, backC, activeOperator, CombinedState::new);
 
-        final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateFromOperatorS =
+        final Stream<CombinedState> updatedStateFromOperatorS =
                 clickedOperatorS.snapshot(calculatorStateC, (operator, state) -> {
-                    Long newBack = state._4.operate(state._2, state._3);
+                    Long result = state.activeOperator.operate(state.main, state.back);
                     Long newMain = 0L;
-                    return Tuple.of(newBack, newMain, newBack, operator);
+                    return new CombinedState(result, newMain, result, operator);
                 });
 
-        final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateFromCompute =
+        final Stream<CombinedState> updatedStateFromCompute =
                 clickCompute.snapshot(calculatorStateC, (unit, state) -> {
-                    Long newBack = 0L;
-                    Long newMain = 0L;
-                    Long newDisplay = state._4.operate(state._2, state._3);
-                    return Tuple.of(newDisplay, newMain, newBack, Operator.NONE);
+                    Long newDisplay = state.activeOperator.operate(state.main, state.back);
+                    return new CombinedState(newDisplay, 0L, 0L, Operator.NONE);
                 });
 
-        final Stream<Tuple4<Long, Long, Long, Operator>> updatedStateS =
+        final Stream<CombinedState> updatedStateS =
                 updatedStateFromCompute.orElse(updatedStateFromOperatorS);
 
         displayC.loop(
                 updatedEnteredNumberS
                         .orElse(updatedStateS
-                                .map(Tuple4::_1))
+                                .map(s -> s.display))
                         .hold(0L));
         mainC.loop(
                 updatedEnteredNumberS
                         .orElse(updatedStateS
-                                .map(Tuple4::_2))
+                                .map(s -> s.main))
                         .hold(0L));
         backC.loop(
                 updatedStateS
-                        .map(Tuple4::_3)
+                        .map(s -> s.back)
                         .hold(0L));
         activeOperator.loop(
                 updatedStateS
-                        .map(Tuple4::_4)
+                        .map(s -> s.activeOperator)
                         .hold(Operator.NONE));
     }
 
