@@ -18,7 +18,6 @@ public class CalculatorControllerV2Add implements CalculatorController {
         }
     }
 
-
     private final StreamSink<Long> clickedDigitS = new StreamSink<>();
     private final StreamSink<Unit> clickedPlusS = new StreamSink<>();
     private final CellLoop<Long> displayC = new CellLoop<>();
@@ -36,9 +35,8 @@ public class CalculatorControllerV2Add implements CalculatorController {
 
         final Stream<CombinedState> updatedStateFromPlusS =
                 clickedPlusS.snapshot(calculatorStateC, (unit, state) -> {
-                    Long newBack = state.main + state.back;
-                    Long newMain = 0L;
-                    return new CombinedState(newBack, newMain, newBack);
+                    Long result = state.main + state.back;
+                    return new CombinedState(result, 0L, result);
                 });
 
         displayC.loop(
