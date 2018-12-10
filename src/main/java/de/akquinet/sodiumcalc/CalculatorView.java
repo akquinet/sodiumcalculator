@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import nz.sodium.Operational;
 
 class CalculatorView extends GridPane {
 
@@ -64,7 +63,8 @@ class CalculatorView extends GridPane {
         displayTF.setPrefColumnCount(8);
         displayTF.setAlignment(Pos.CENTER_RIGHT);
         add(displayTF, 0, 0, 4, 1);
-        Operational.value(calculatorController.getDisplayCell())
+        calculatorController
+                .getDisplayCell()
                 .listen(value -> displayTF.setText("" + value));
     }
 
